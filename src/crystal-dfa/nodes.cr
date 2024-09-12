@@ -1,6 +1,8 @@
 module DFA
   module AST
-    class ASTNode; end
+    class ASTNode
+      # Ensure this class is properly defined with any necessary methods or properties
+    end
 
     class LiteralNode < ASTNode
       getter :value

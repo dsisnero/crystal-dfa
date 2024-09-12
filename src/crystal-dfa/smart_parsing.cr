@@ -82,14 +82,14 @@ module DFA
             # (A*|B*)* => (A|B)*
             # (A*|B)* => (A|B)*
             ntree = node.tree.as(AST::AlternationNode)
-            if ntree.alternatives.any?(&.is_a? AST::StarNode)
+            if ntree.alternatives.any?(AST::StarNode)
               AST::StarNode.new AST::AlternationNode.new(
                 ntree.alternatives.map { |a| a.is_a?(AST::StarNode) ? a.tree : a }
               )
             end
           when AST::ConcatNode
             ntree = node.tree.as(AST::ConcatNode)
-            if ntree.nodes.all?(&.is_a? AST::StarNode)
+            if ntree.nodes.all?(AST::StarNode)
               # (A*B*)* => (A|B)*
               AST::StarNode.new AST::AlternationNode.new(
                 ntree.nodes.map &.as(AST::StarNode).tree

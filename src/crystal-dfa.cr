@@ -23,7 +23,7 @@ module DFA
         id = 0
         id_for_node = ->(node : Node) { node_ids[node] ||= (id += 1); node_ids[node] }
         node = ->(node : Node) { %{Graph::Easy::Node->new( name => '#{id_for_node.call(node)}', label => '#{node.name}' )} }
-        edges = graph.map_with_index do |g, index|
+        edges = graph.map_with_index do |g, _|
           g.next.map do |s|
             <<-perl
             my \\$a = #{node.call(g)};
@@ -50,5 +50,11 @@ module DFA
         "/#{expression}/\n" + `perl -Mutf8 -CS -e "#{program}"`
       end
     end
+  end
+end
+
+module DFA
+  def self.hello
+    "Hello, World!"
   end
 end

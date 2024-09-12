@@ -1,7 +1,6 @@
 module DFA
   module Traverse
     macro included
-
       alias BlockType = AST::ASTNode -> AST::ASTNode?
 
       def self.visit(node : AST::WrapperNode, &block : BlockType)
@@ -26,7 +25,6 @@ module DFA
       def self.visit(node : AST::ASTNode, &block : BlockType)
         block.call(node) || node
       end
-
     end
   end
 end

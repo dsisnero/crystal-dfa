@@ -51,7 +51,7 @@ module DFA
       @lexer = Lexer.new(string)
     end
 
-    def self.parse(string, optimize = true)
+    def self.parse(string, optimize = true) : AST::ASTNode
       ast = self.new(string).parse
       if ast && optimize
         SmartParsing.optimize(ast).not_nil!
@@ -76,7 +76,7 @@ module DFA
 
       left = prefix.parse(self, token)
 
-      while (precedence < getPrecedence)
+      while precedence < getPrecedence
         _token = peek
         break unless _token
 
@@ -143,23 +143,23 @@ module DFA
     end
 
     class NameParslet < PrefixParslet
-      def parse(parser, token)
+      def parse(parser, token) : AST::ASTNode
         AST::LiteralNode.new(token[:value].not_nil!)
       end
     end
 
     class AnyCharacterParslet < PrefixParslet
-      def parse(parser, token)
+      def parse(parser, token) : AST::ASTNode
         AST::CharacterClassNode.new(false, Array(String).new, ANY_CHAR_RANGES)
       end
     end
 
     class SpecialCharacterClassParslet < PrefixParslet
-      def parse(parser, token)
+      def parse(parser, token) : AST::ASTNode
         _next = parser.consume
         raise "unexpected end of input" unless _next
 
-        value = _next[:type] == :LITERAL ? _next[:value] : # translate specia characters back to
+        value = _next[:type] == :LITERAL ? _next[:value] :  # translate specia characters back to
         # their string representation because
         # we won't interprete them inside a
         # characterclass
@@ -180,7 +180,7 @@ Lexer::IDENTIFIERS.key_for(_next[:type])
     end
 
     class GroupParslet < PrefixParslet
-      def parse(parser, token)
+      def parse(parser, token) : AST::ASTNode
         # ignore non capturing group designators
         if (_peek = parser.peek) &&
            _peek[:type] == :QSTM
@@ -199,7 +199,7 @@ Lexer::IDENTIFIERS.key_for(_next[:type])
     end
 
     class CharacterRangeParslet < InfixParslet
-      def parse(parser, left, token)
+      def parse(parser, left, token) : AST::ASTNode
         parser.consume(:MINUS)
         right = parser.parseExpression(precedence)
 
@@ -207,18 +207,18 @@ Lexer::IDENTIFIERS.key_for(_next[:type])
           raise "invalid character range #{left.inspect} #{right.inspect}"
         end
 
-        unless (left.value.lowercase? && right.value.lowercase?) ||
-               (left.value.uppercase? && right.value.uppercase?) ||
-               (left.value.number? && right.value.number?)
-          raise "#{left.value}-#{right.value} is not a valid character range"
-        else
+        if (left.value.lowercase? && right.value.lowercase?) ||
+           (left.value.uppercase? && right.value.uppercase?) ||
+           (left.value.number? && right.value.number?)
           AST::CharacterRangeNode.new(left.value, right.value)
+        else
+          raise "#{left.value}-#{right.value} is not a valid character range"
         end
       end
     end
 
     class CharacterClassParslet < PrefixParslet
-      def parse(parser, token)
+      def parse(parser, token) : AST::ASTNode
         negate = (peek = parser.peek) &&
                  (peek[:type] == :NEGATE) &&
                  parser.consume ? true : false
@@ -266,7 +266,7 @@ Lexer::IDENTIFIERS.key_for(_next[:type])
     end
 
     class ConcatParslet < InfixParslet
-      def parse(parser, left : AST::ASTNode, token)
+      def parse(parser, left : AST::ASTNode, token) : AST::ASTNode
         exp = AST::ConcatNode.new([left.as(AST::ASTNode)])
 
         _next = parser.parseExpression(Precedence[:LITERAL] - 1).as(AST::ASTNode?)
@@ -282,7 +282,7 @@ Lexer::IDENTIFIERS.key_for(_next[:type])
     end
 
     class CurlyQuantifierParslet < InfixParslet
-      def parse(parser, left : AST::ASTNode, token)
+      def parse(parser, left : AST::ASTNode, token) : AST::ASTNode
         parser.consume(:LCURLY)
 
         values = parse_quantifications(
@@ -318,14 +318,14 @@ Lexer::IDENTIFIERS.key_for(_next[:type])
     end
 
     class QuantifierParslet(T) < InfixParslet
-      def parse(parser, left : AST::ASTNode, token)
+      def parse(parser, left : AST::ASTNode, token) : AST::ASTNode
         parser.consume
         T.new(left)
       end
     end
 
     class AlternationParslet < InfixParslet
-      def parse(parser, left : AST::ASTNode, token)
+      def parse(parser, left : AST::ASTNode, token) : AST::ASTNode
         exp = AST::AlternationNode.new([left.as(AST::ASTNode)])
         while (peek = parser.peek) && (peek[:type] == :PIPE)
           parser.consume

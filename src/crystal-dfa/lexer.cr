@@ -28,7 +28,7 @@ module DFA
     def lookahead
       return nil if @pos >= @string.size
       _next = (@string[@pos])
-      token = if (type = IDENTIFIERS[_next]?)
+      token = if type = IDENTIFIERS[_next]?
                 Token.new(type: type, value: nil)
               else
                 Token.new(type: :LITERAL, value: _next)

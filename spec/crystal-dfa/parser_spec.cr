@@ -18,8 +18,8 @@ EXPRESSIONS = [
   "(ab){1440}",
   "(ab){1440,}",
   "(ab){4,}",
-  "[^0-9A-Za-zß]" #  "((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\\w\\-]+)?",
-#  "\\-?(0|[1-9][0-9]*)(.[0-9]+)?((e|E)?(\\+|\\-)?[0-9]+)?"
+  "[^0-9A-Za-zß]", #  "((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\\w\\-]+)?",
+  #  "\\-?(0|[1-9][0-9]*)(.[0-9]+)?((e|E)?(\\+|\\-)?[0-9]+)?"
 ]
 
 INVALID_EXPRESSIONS = [
@@ -49,11 +49,11 @@ describe DFA::Parser do
 
   it "parses non-capturing groups but doesn't recognize them as non-capturing" do
     expression = <<-expression
-    (?:[^"\]|\.)*
+    (?:[^"]|.)*
     expression
 
     expected = <<-expression
-    ([^\"]|[\u0000-􏿿])*
+    ([^"]|[\u0000-􏿿])*
     expression
 
     DFA::Parser.parse(expression, false).to_s.should eq expected

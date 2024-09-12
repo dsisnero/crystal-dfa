@@ -45,7 +45,7 @@ module DFA
         max = (min == s1) ? s2 : s1
 
         if min[1] < max[0]
-          return nil
+          nil
         else
           {max[0],
            min[1] < max[1] ? min[1] : max[1]}
@@ -135,7 +135,7 @@ module DFA
 
       def clone(references : Hash(UInt64, State) = Hash(UInt64, State).new)
         if references[self.object_id]?
-          return references[self.object_id]
+          references[self.object_id]
         else
           n = State.allocate
           n.c = c

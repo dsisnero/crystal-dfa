@@ -47,7 +47,7 @@ module DFA
       i = -1
       while (i += 1) < states.size
         state = states[i]
-        next_syms = IntersectionMethods.disjoin(state.l.map(&.c).reject(&.[0].< 0).uniq)
+        next_syms = IntersectionMethods.disjoin(state.l.map(&.c).reject(&.[0].< 0).uniq!)
         next_syms.each do |symbol|
           t = Array(NFA::State).new
           step(state.l, symbol, t, listid += 1)
